@@ -2,3 +2,5 @@
 *.img
 *.xz
 xbps-cachedir*
+!autoinstaller/opt/void-autoinstall/install.sh
+!autoinstaller/opt/void-autoinstall/chroot_install.sh
