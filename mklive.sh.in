@@ -102,6 +102,11 @@ copy_dracut_files() {
     cp dracut/* $1/usr/lib/dracut/modules.d/01vmklive/
 }
 
+copy_autoinstaller_files() {
+    mkdir -p $1/usr/lib/dracut/modules.d/01autoinstaller
+    cp dracut/* $1/usr/lib/dracut/modules.d/01autoinstaller/
+}
+
 install_prereqs() {
     copy_void_conf $VOIDHOSTDIR
     XBPS_ARCH=$ARCH $XBPS_INSTALL_CMD -r $VOIDHOSTDIR $XBPS_REPOSITORY \
@@ -148,13 +153,15 @@ generate_initramfs() {
     local _args
 
     copy_dracut_files $ROOTFS
+    copy_autoinstaller_files $ROOTFS
+
     if [ "$BASE_SYSTEM_PKG" = "base-system-systemd" ]; then
         _args="--add systemd"
     else
         _args="--omit systemd"
     fi
     chroot $ROOTFS env -i /usr/bin/dracut -N --${INITRAMFS_COMPRESSION} \
-        --add-drivers "ahci" --force-add "vmklive" ${_args} "/boot/initrd" $KERNELVERSION
+        --add-drivers "ahci" --force-add "vmklive autoinstaller" ${_args} "/boot/initrd" $KERNELVERSION
     [ $? -ne 0 ] && die "Failed to generate the initramfs"
 
     mv $ROOTFS/boot/initrd $BOOT_DIR
@@ -354,7 +361,7 @@ ISOLINUX_DIR="$BOOT_DIR/isolinux"
 GRUB_DIR="$BOOT_DIR/grub"
 ISOLINUX_CFG="$ISOLINUX_DIR/isolinux.cfg"
 CURRENT_STEP=0
-STEP_COUNT=10
+STEP_COUNT=9
 [ -n "${INCLUDE_DIRECTORY}" ] && ((STEP_COUNT=STEP_COUNT+1))
 
 : ${SYSLINUX_DATADIR:=$VOIDHOSTDIR/usr/share/syslinux}
@@ -395,10 +402,6 @@ if [ -n "${INCLUDE_DIRECTORY}" ];then
     print_step "Copying directory structure into the rootfs: ${INCLUDE_DIRECTORY} ..."
     copy_include_directory
 fi
-
-print_step "Installing auto-installer..."
-INCLUDE_DIRECTORY=autoinstaller
-copy_include_directory
 
 print_step "Generating initramfs image ($INITRAMFS_COMPRESSION)..."
 generate_initramfs
