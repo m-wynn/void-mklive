@@ -27,7 +27,7 @@ welcome() {
 get_address() {
     # Get an IP address
     dhcpcd -w
-    sleep 15
+    sleep 5
 }
 
 partition_disk() {

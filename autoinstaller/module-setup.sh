@@ -7,13 +7,25 @@ check() {
 }
 
 depends() {
-    echo "network"
+    return 0
 }
 
 install() {
-    inst /usr/bin/chroot
+    inst /usr/bin/awk
     inst /usr/bin/chmod
-    inst /usr/bin/ed
+    inst /usr/bin/chroot
+    inst /usr/bin/clear
+    inst /usr/bin/cp
+    inst /usr/bin/dhcpcd
+    inst /usr/bin/lsblk
+    inst /usr/bin/mkdir
+    inst /usr/bin/mkfs.ext4
+    inst /usr/bin/mkswap
+    inst /usr/bin/mount
+    inst /usr/bin/sfdisk
+    inst /usr/bin/sleep
+    inst /usr/bin/xbps-install
+    inst /usr/bin/xbps-uhelper
     inst_hook pre-mount 01 "$moddir/install.sh"
     inst "$moddir/chroot_install.sh"
     inst "$moddir/config.cfg"
